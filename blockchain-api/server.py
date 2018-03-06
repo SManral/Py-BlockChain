@@ -3,13 +3,13 @@ from flask import Flask, jsonify, request
 import json
 
 import block
-import blockchain
-import mine
+from blockchain import Blockchain
+from mine import Miner
 from transaction import Transaction
 
 app = Flask(__name__)
 
-blockchain = blockchain.Blockchain()
+blockchain = Blockchain()
 
 @app.route('/chain', methods=['GET'])
 def full_chain():
@@ -21,30 +21,36 @@ def full_chain():
 
 @app.route('/mine/<block>', methods=['GET'])
 def mine(block):
-    previous_block = blockchain.last_block
-    difficulty = 2
-    mined_block = miner.mine(block,previous_block,difficulty)
+    #previous_block = blockchain.last_block
+    miner = Miner(block)
+    mined_block = miner.mine(block).__dict__
 
     #add the newly mined block to the chain
-    blockchain.chain.append(block)
+    blockchain.chain.append(mined_block)
     print("Hooray, a new block is mined!")
 
-    response = json.dumps(mined_block.__dict__)
+    response = json.dumps(mined_block)
     return jsonify(response), 200
 
 
 @app.route('/transaction', methods=['GET','POST'])
 def transaction():
-    txn_amount = request.form.get('receiver_address')
-    txn_receiver = request.form.get('amount')
-    txn_sender = request.form.get('sender_address')
-    txn = Transaction(txn_amount, txn_receiver, txn_sender)
+    txn_sender = request.form.get('sender')
+    txn_recipient = request.form.get('recipient')
+    txn_amount = request.form.get('amount')
+    txn_signature = request.form.get('signature')
+
+    txn = Transaction(txn_sender, txn_recipient, txn_amount)
     txn_id = txn.transaction_id
+    txn_verify = txn.verify_signature(txn_signature)
+
     response = {
-        "Transaction Amount": txn_amount,
-        "Transaction ID": txn_id,
-        "Transaction Receiver": txn_receiver,
         "Transaction Sender": txn_sender,
+        "Transaction Receiver": txn_recipient,
+        "Transaction Amount": txn_amount,
+        "Transaction Signature": txn_signature,
+        "Transaction ID": txn_id,
+        "Verified": txn_verify
     }
     return jsonify(response), 200
 

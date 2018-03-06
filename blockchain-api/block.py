@@ -33,8 +33,9 @@ class Block(object):
     #Add new transaction to the block
     def add_tansaction(self, transaction):
         gas_limit = self.block_header['gas_limit']
-        gas_used = len(self.block_body['transactions'])
+        gas_used = self.gas_used
         if transaction is None or gas_used == gas_limit:
             return False
         self.block_body['transactions'].append(transaction)
+        self.gas_used = self.gas_used + 1
         return True

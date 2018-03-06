@@ -14,16 +14,17 @@ class Wallet(object):
 
     #generate public and private key for the owner of this wallet
     def generate_keys(self):
-        secexp = int("9d0219792467d7d37b4d43298a7d0c05", 16)
-        self._private_key = SigningKey.from_secret_exponent(secexp, SECP256k1, sha256)
-        self._public_key = self._private_key.get_verifying_key()
+        private_key = SigningKey.generate(curve=SECP256k1, hashfunc=sha256)
+        public_key = self._private_key.get_verifying_key()
+        self._private_key = private_key.to_string()
+        self._public_key = public_key.to_string()
 
 
     #TODO
     #def get_balance(self):
 
 
-    def send_crypto(self, receipient_addr, amount):
+    def send_crypto(self, receipient_addr, signature, amount):
         new_transaction = transaction.Transaction(self._public_key, receipient_addr, amount)
-        serialized_transaction = utils.serialize(new_transaction)
+        #serialized_transaction = utils.serialize(new_transaction)
         signature = new_transaction.generate_signature(self._private_key)
