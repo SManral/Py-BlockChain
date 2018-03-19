@@ -29,18 +29,6 @@ class Transaction(object):
         return hash(self._transaction, serialized=True)
 
 
-    #generate signature to sign/process the transaction
-    def generate_signature(self, sender_key):
-        private_key = string_to_ecdsa(sender_key, type_private=True)
-        signature = None
-        while signature is None:
-            try:
-                signature = private_key.sign(self._transaction)
-            except RuntimeError:
-                pass
-        return signature
-
-
     #verify valid signature
     #Needs to verify:
     #1) user has the amount that user wants to send

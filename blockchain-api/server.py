@@ -42,7 +42,7 @@ def transaction():
 
     txn = Transaction(txn_sender, txn_recipient, txn_amount)
     txn_id = txn.transaction_id
-    txn_verify = txn.verify_signature(txn_signature)
+    txn_verify = txn.process_transaction(txn_signature)
 
     response = {
         "Transaction Sender": txn_sender,
@@ -92,4 +92,4 @@ def consensus():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8080)
+    app.run(debug=True, host='0.0.0.0', port=80)

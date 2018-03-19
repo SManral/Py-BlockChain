@@ -1,4 +1,3 @@
-import block
 import utils
 
 class Miner():
